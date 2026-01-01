@@ -1,7 +1,0 @@
-[2025-12-31 06:05:55] Stats query error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'lab_booking_system.labs' doesn't exist
-[2025-12-31 06:06:04] Stats query error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'lab_booking_system.labs' doesn't exist
-[2025-12-31 06:06:35] Stats query error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'lab_booking_system.labs' doesn't exist
-[2025-12-31 06:07:06] Stats query error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'lab_booking_system.labs' doesn't exist
-[2025-12-31 06:07:18] Stats query error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'lab_booking_system.labs' doesn't exist
-[2025-12-31 06:07:57] Stats query error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'lab_booking_system.labs' doesn't exist
-[2025-12-31 06:08:34] Stats query error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'lab_booking_system.labs' doesn't exist

@@ -1,0 +1,15 @@
+[2025-12-31 06:17:14] Registration check error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'lab_booking_system.users' doesn't exist
+[2025-12-31 06:17:46] Registration check error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'lab_booking_system.users' doesn't exist
+[2025-12-31 06:17:46] Registration check error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'lab_booking_system.users' doesn't exist
+[2025-12-31 06:18:31] Login error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'lab_booking_system.users' doesn't exist
+[2025-12-31 06:18:39] Login error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'lab_booking_system.users' doesn't exist
+[2025-12-31 06:22:54] Login error: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'lab_booking_system.users' doesn't exist
+[2026-01-01 06:51:05] Failed login attempt for: admin@lab.com
+[2026-01-01 06:51:13] Failed login attempt for: admin@lab.com
+[2026-01-01 06:52:10] Failed login attempt for: admin@lab.com
+[2026-01-01 06:52:16] Failed login attempt for: admin@lab.com
+[2026-01-01 06:52:39] Failed login attempt for: jeremyxjosh104@gmail.com
+[2026-01-01 06:53:49] Failed login attempt for: admin@lab.com
+[2026-01-01 06:53:57] Failed login attempt for: admin@lab.com
+[2026-01-01 06:58:43] Failed login attempt for: admin@lab.com
+[2026-01-01 06:58:52] Failed login attempt for: admin@lab.com
