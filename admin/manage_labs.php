@@ -1,146 +1,102 @@
 <?php
-// 1. Start the session to access the user's login information
 session_start();
-
-/**
- * ADMIN SECURITY SHIELD
- * This logic verifies if the user has permission to be here.
- */
-
-// 2. Check: Is the user logged in? AND Is their role specifically 'admin'?
-// Note: Double-check with Squad 1 if they used 'user_role' or just 'role' in their login code.
+// Security Check
 if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
-    
-    // 3. If they are NOT an admin, kick them out to the login page.
-    // The "../" tells the computer to look outside the 'admin' folder for the 'auth' folder.
-    header("Location: ../auth/login.php?error=access_denied");
-    
-    // 4. Stop the rest of the page from loading for unauthorized users.
+    header("Location: ../auth/login.php?error=unauthorized");
     exit();
 }
-
-// If the code reaches this point, the user is a verified Admin!
+// Database Connection (Squad 1's file)
+require_once('../includes/db.php');
 ?>
 
-require_once('../includes/db.php'); 
-
-// Fetch all labs from the database
-$stmt = $pdo->query("SELECT * FROM labs");
+<?php include('security.php'); 
+// Fetch labs
+$stmt = $pdo->query("SELECT * FROM labs ORDER BY id DESC");
 $labs = $stmt->fetchAll();
-
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Manage Labs - EZLab</title>
-    <style>
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #2c3e50; color: white; }
-        tr:nth-child(even) { background-color: #f2f2f2; }
-        .btn { padding: 5px 10px; text-decoration: none; border-radius: 3px; }
-        .btn-edit { background: #f39c12; color: white; }
-        .btn-delete { background: #e74c3c; color: white; }
-    </style>
+    <title>Manage Labs</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-    <a href="dashboard.php">← Back to Dashboard</a>
-    <h1>Manage Laboratory Rooms</h1>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Lab Name</th>
-                <th>Location</th>
-                <th>Price (RM/hr)</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($labs as $lab): ?>
-            <tr>
-                <td><?php echo $lab['lab_name']; ?></td>
-                <td><?php echo $lab['location']; ?></td>
-                <td><?php echo $lab['price']; ?></td>
-                <td><?php echo $lab['status']; ?></td>
-                <td>
-                    <a href="#" class="btn btn-edit">Edit</a>
-                    <a href="#" class="btn btn-delete">Delete</a>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
+    <h1>Lab Management</h1>
+    <a href="add_lab.php" class="btn-add"> + Add New Lab</a>
+    
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        <?php foreach ($labs as $lab): ?>
+        <tr>
+            <td><?php echo htmlspecialchars($lab['lab_name']); ?></td>
+            <td><?php echo htmlspecialchars($lab['location']); ?></td>
+            <td><?php echo $lab['status']; ?></td>
+            <td>
+                <a href="edit_lab.php?id=<?php echo $lab['id']; ?>">Edit</a> | 
+                <a href="delete_lab.php?id=<?php echo $lab['id']; ?>" onclick="return confirm('Delete this?')">Delete</a>
+            </td>
+        </tr>
+        <?php endforeach; ?>
     </table>
 </body>
 </html>
 
-<?php
-include 'security_shield.php'; // Or paste the shield code here
-require_once('../includes/db.php');
+<?php include('security.php'); 
 
-// We only run this code IF the user clicks the "Submit" button
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-    // 1. Get the data from the form
-    $name  = $_POST['lab_name'];
-    $loc   = $_POST['location'];
-    $price = $_POST['price'];
-    $stat  = $_POST['status'];
-
-    // 2. Prepare the SQL (Safety First!)
-    // We use ":" placeholders to prevent SQL Injection
-    $sql = "INSERT INTO labs (lab_name, location, price, status) 
-            VALUES (:name, :loc, :price, :stat)";
-    
+    $sql = "INSERT INTO labs (lab_name, location, status) VALUES (:n, :l, :s)";
     $stmt = $pdo->prepare($sql);
-    
-    // 3. Execute and save to Database
-    if ($stmt->execute(['name' => $name, 'loc' => $loc, 'price' => $price, 'stat' => $stat])) {
-        // Redirect back to the list with a success message
-        header("Location: manage_labs.php?msg=Lab Added Successfully");
-        exit();
-    }
+    $stmt->execute(['n' => $_POST['lab_name'], 'l' => $_POST['location'], 's' => $_POST['status']]);
+    header("Location: manage_labs.php?msg=Added");
 }
 ?>
+<form method="POST">
+    <input type="text" name="lab_name" placeholder="Lab Name" required>
+    <input type="text" name="location" placeholder="Location" required>
+    <select name="status">
+        <option value="Available">Available</option>
+        <option value="Maintenance">Maintenance</option>
+    </select>
+    <button type="submit">Save Lab</button>
+</form>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add New Lab</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <style>
-        .form-container { max-width: 500px; margin: 50px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; }
-        button { background: #27ae60; color: white; padding: 10px 20px; border: none; cursor: pointer; width: 100%; }
-    </style>
-</head>
-<body>
+<?php include('security.php'); 
 
-<div class="form-container">
-    <h2>Add New Laboratory</h2>
-    <form method="POST" action="add_lab.php">
-        <label>Lab Name:</label>
-        <input type="text" name="lab_name" placeholder="e.g. Computing Lab 1" required>
+$id = $_GET['id'];
+// Fetch current data for this specific ID
+$stmt = $pdo->prepare("SELECT * FROM labs WHERE id = ?");
+$stmt->execute([$id]);
+$lab = $stmt->fetch();
 
-        <label>Location:</label>
-        <input type="text" name="location" placeholder="e.g. Block G" required>
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $sql = "UPDATE labs SET lab_name = :n, location = :l, status = :s WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['n' => $_POST['lab_name'], 'l' => $_POST['location'], 's' => $_POST['status'], 'id' => $id]);
+    header("Location: manage_labs.php?msg=Updated");
+}
+?>
+<form method="POST">
+    <input type="text" name="lab_name" value="<?php echo $lab['lab_name']; ?>">
+    <input type="text" name="location" value="<?php echo $lab['location']; ?>">
+    <select name="status">
+        <option value="Available" <?php if($lab['status'] == 'Available') echo 'selected'; ?>>Available</option>
+        <option value="Maintenance" <?php if($lab['status'] == 'Maintenance') echo 'selected'; ?>>Maintenance</option>
+    </select>
+    <button type="submit">Update Lab</button>
+</form>
 
-        <label>Price per Hour (RM):</label>
-        <input type="number" step="0.01" name="price" placeholder="50.00" required>
+<?php 
+include('security.php'); 
 
-        <label>Availability:</label>
-        <select name="status">
-            <option value="Available">Available</option>
-            <option value="Maintenance">Maintenance</option>
-            <option value="Occupied">Occupied</option>
-        </select>
-
-        <button type="submit">Save Lab</button>
-        <a href="manage_labs.php" style="display:block; text-align:center; margin-top:10px;">Cancel</a>
-    </form>
-</div>
-
-</body>
-</html>
+if (isset($_GET['id'])) {
+    $stmt = $pdo->prepare("DELETE FROM labs WHERE id = ?");
+    $stmt->execute([$_GET['id']]);
+}
+header("Location: manage_labs.php?msg=Deleted");
+exit();
+?>
