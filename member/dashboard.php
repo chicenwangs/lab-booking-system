@@ -1,44 +1,76 @@
-> member/dashboard.php
 <?php
+/**
+ * FIXED: Member Dashboard
+ * Added: Authentication, CSS, Real data
+ */
+
 session_start();
+require_once '../includes/db_connect.php';
+require_once '../includes/functions.php';
 
-// Mock user session data (Usually set during login)
-if (!isset($_SESSION['user'])) {
-    $_SESSION['user'] = ['name' => 'Member User', 'id' => 'MEM-99'];
-}
+// ✅ ADDED: Proper authentication check
+requireLogin();
 
-// Get current cart count for the "Heaviest Logic" requirement
+// Get current cart count
 $cart_count = isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0;
+
+// ✅ ADDED: Get real user stats from database
+$userId = getCurrentUserId();
+$stmt = $pdo->prepare("SELECT COUNT(*) as total FROM bookings WHERE user_id = ?");
+$stmt->execute([$userId]);
+$totalBookings = $stmt->fetch()['total'];
 ?>
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Member Dashboard</title>
+    <!-- ✅ ADDED: CSS Link -->
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-    <h1>Welcome, <?php echo $_SESSION['user']['name']; ?>!</h1>
-    <hr>
-
-    <div style="display: flex; gap: 20px;">
-        <div style="border: 1px solid #000; padding: 20px; border-radius: 8px;">
-            <h3>Current Cart</h3>
-            <p>You have <strong><?php echo $cart_count; ?></strong> lab(s) in your selection.</p>
-            <a href="cart.php">Manage Cart</a>
+    <!-- ✅ ADDED: Header with navigation -->
+    <?php include '../includes/header.php'; ?>
+    
+    <main class="dashboard container">
+        <div class="dashboard-header">
+            <h1>Welcome, <?php echo htmlspecialchars(getCurrentUserName()); ?>!</h1>
+            <p>Manage your lab bookings from your dashboard</p>
+        </div>
+        
+        <!-- ✅ ADDED: Flash messages -->
+        <?php displayFlash(); ?>
+        
+        <!-- Stats Grid (Your teammate's logic, with styling) -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value"><?php echo $cart_count; ?></div>
+                <div class="stat-label">In Cart</div>
+                <a href="cart.php" class="btn btn-secondary btn-sm" style="margin-top: 1rem;">Manage Cart</a>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-value"><?php echo $totalBookings; ?></div>
+                <div class="stat-label">Total Bookings</div>
+                <a href="history.php" class="btn btn-secondary btn-sm" style="margin-top: 1rem;">View History</a>
+            </div>
         </div>
 
-        <div style="border: 1px solid #000; padding: 20px; border-radius: 8px;">
-            <h3>Quick Actions</h3>
-            <ul>
-                <li><a href="book.php">Book a New Lab</a></li>
-                <li><a href="history.php">View My History</a></li>
-                <li><a href="profile.php">My Profile Settings</a></li>
-            </ul>
+        <!-- Quick Actions Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Quick Actions</h2>
+            </div>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="book.php" class="btn btn-primary">🔬 Book a New Lab</a>
+                <a href="history.php" class="btn btn-secondary">📋 View My History</a>
+                <a href="profile.php" class="btn btn-secondary">👤 My Profile</a>
+            </div>
         </div>
-    </div>
+    </main>
 
-    <br><br>
-    <form method="POST" action="../logout.php">
-        <button type="submit">Logout</button>
-    </form>
+    <!-- ✅ ADDED: Footer -->
+    <?php include '../includes/footer.php'; ?>
 </body>
 </html>
