@@ -164,11 +164,11 @@ INSERT INTO bookings (user_id, lab_id, booking_date, start_time, end_time, purpo
 -- ============================================================================
 -- Check that everything was created successfully
 SELECT 'Database setup complete!' AS status;
-SELECT '========================' AS separator;
+SELECT '========================' AS line;
 SELECT 'Users created:' AS info, COUNT(*) AS count FROM users;
 SELECT 'Labs created:' AS info, COUNT(*) AS count FROM labs;
 SELECT 'Sample bookings:' AS info, COUNT(*) AS count FROM bookings;
-SELECT '========================' AS separator;
+SELECT '========================' AS line;
 SELECT 'Admin login: admin@lab.com / admin123' AS credentials;
 SELECT 'Member login: student@lab.com / student123' AS credentials;
 
