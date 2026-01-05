@@ -1,3 +1,9 @@
-<?php $host = 'localhost'; $dbname = 'lab_booking_system'; $username = 'root'; // Default XAMPP user $password = ''; // Default XAMPP password is empty
+<?php $host = 'sql111.infinityfree.com'; $dbname = 'if0_40827849_ezlab'; $username = 'if0_40827849'; $password = 'NLQhanPOMim3uv'; 
 try {
-$pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password); $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC); } catch (PDOException $e) { die("CRITICAL ERROR: Connection failed: " . $e->getMessage()); } ?>
+    $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+    echo "<h1>✅ Success! Your website is connected to the database.</h1>";
+} catch (PDOException $e) {
+    echo "<h1>❌ Connection Failed:</h1>";
+    echo "<p>" . $e->getMessage() . "</p>";
+}
+?>
