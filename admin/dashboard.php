@@ -10,6 +10,29 @@ require_once '../includes/functions.php';
 
 requireAdmin();
 
+
+// Handle booking cancellation
+if (isset($_GET['cancel_booking'])) {
+    $bookingId = intval($_GET['cancel_booking']);
+    
+    try {
+        $stmt = $pdo->prepare("UPDATE bookings SET status = 'cancelled' WHERE id = ?");
+        if ($stmt->execute([$bookingId])) {
+            setFlash('Booking cancelled successfully!', 'success');
+        } else {
+            setFlash('Failed to cancel booking', 'error');
+        }
+    } catch (PDOException $e) {
+        setFlash('Error cancelling booking', 'error');
+        logError('Cancel booking error: ' . $e->getMessage());
+    }
+    
+    // Redirect to remove the GET parameter
+    header("Location: dashboard.php");
+    exit();
+}
+
+
 // Get statistics
 try {
     // Total users
@@ -164,7 +187,7 @@ try {
             </div>
         </div>
         
-        <!-- Recent Bookings -->
+                <!-- Recent Bookings -->
         <div class="card" style="margin-top: 2rem;">
             <div class="card-header">
                 <h2 class="card-title">🕐 Recent Bookings</h2>
@@ -184,6 +207,7 @@ try {
                                 <th>Time</th>
                                 <th>Cost</th>
                                 <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -196,6 +220,17 @@ try {
                                 <td><?php echo formatTime($booking['start_time']); ?> - <?php echo formatTime($booking['end_time']); ?></td>
                                 <td><?php echo formatCurrency($booking['total_cost']); ?></td>
                                 <td><?php echo displayStatusBadge($booking['status']); ?></td>
+                                <td>
+                                    <?php if ($booking['status'] === 'confirmed' || $booking['status'] === 'pending'): ?>
+                                        <a href="?cancel_booking=<?php echo $booking['id']; ?>" 
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Cancel this booking?')">
+                                            Cancel
+                                        </a>
+                                    <?php else: ?>
+                                        <span class="badge badge-secondary">-</span>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -210,6 +245,7 @@ try {
                 <h2 class="card-title">⚡ Quick Actions</h2>
             </div>
             <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="manage_bookings.php" class="btn btn-primary">📅 Manage Bookings</a>
                 <a href="manage_labs.php" class="btn btn-primary">🔬 Manage Labs</a>
                 <a href="manage_users.php" class="btn btn-primary">👥 Manage Users</a>
                 <a href="reports.php" class="btn btn-primary">📊 View Reports</a>

@@ -5,3 +5,9 @@ Booking on 2026-01-04 12:19 by chicenwangs for: Chemistry Lab A, Physics Lab B
 Booking on 2026-01-05 01:46 by chicenwangs for: Biology Lab C, Biology Lab C, Chemistry Lab A, Biology Lab C
 Booking on 2026-01-05 01:50 by chicenwangs for: Biology Lab C
 Booking on 2026-01-05 01:58 by chicenwangs for: Biology Lab C
+Booking on 2026-01-05 13:52 by chicenwangs for: Biology Lab C
+Booking on 2026-01-05 13:53 by chicenwangs for: Biology Lab C
+Booking on 2026-01-05 14:12 by chicenwangs for: Biology Lab C
+Booking on 2026-01-05 14:15 by chicenwangs for: Biology Lab C
+Booking on 2026-01-05 14:32 by chicenwangs for: Chemistry Lab A
+Booking on 2026-01-05 14:33 by chicenwangs for: Computer Lab D

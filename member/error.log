@@ -1,0 +1,2 @@
+[2026-01-05 14:14:37] History save error: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '3-2026-01-05-14:00:00' for key 'unique_booking'
+[2026-01-05 14:14:42] History save error: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '3-2026-01-05-14:00:00' for key 'unique_booking'

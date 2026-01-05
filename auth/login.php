@@ -51,9 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 setFlash('Welcome back, ' . $user['full_name'] . '!', 'success');
                 
                 // Redirect based on role
-                $redirectUrl = ($user['role'] === 'admin') 
-                    ? 'admin/dashboard.php' 
-                    : 'member/dashboard.php';
+                $redirectUrl = ($user['role'] === 'admin')
+                     ? '/lab-booking-system/admin/dashboard.php'
+                     : '/lab-booking-system/member/dashboard.php';
                 redirect($redirectUrl);
             } else {
                 $error = 'Invalid email or password';
@@ -269,7 +269,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p>
                     <strong>Admin:</strong> 
                     <code>admin@lab.com</code> / 
-                    <code>admin123</code>
+                    <code>Admin123</code>
                 </p>
                 <p style="margin: 0;">
                     <strong>Member:</strong> 

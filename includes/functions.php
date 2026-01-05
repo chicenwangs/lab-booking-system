@@ -264,13 +264,33 @@ function hasFlash() {
  * @param string $url - URL to redirect to
  */
 function redirect($url) {
-    // If URL doesn't start with http, treat as relative
-    if (!preg_match('/^https?:\/\//', $url)) {
-        // Remove leading slash if present
-        $url = ltrim($url, '/');
-        // Add base path
-        $url = '/lab-booking-system/' . $url;
+    // If URL starts with http/https, use as-is
+    if (preg_match('/^https?:\/\//', $url)) {
+        header("Location: $url");
+        exit();
     }
+    
+    // Handle relative paths from current directory
+    if (!str_starts_with($url, '/')) {
+        // Get current script directory relative to document root
+        $currentDir = dirname($_SERVER['PHP_SELF']);
+        
+        // Resolve .. and . in the path
+        $parts = explode('/', $currentDir . '/' . $url);
+        $resolved = [];
+        
+        foreach ($parts as $part) {
+            if ($part === '' || $part === '.') continue;
+            if ($part === '..') {
+                array_pop($resolved);
+            } else {
+                $resolved[] = $part;
+            }
+        }
+        
+        $url = '/' . implode('/', $resolved);
+    }
+    
     header("Location: $url");
     exit();
 }

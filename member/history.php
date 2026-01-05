@@ -17,19 +17,72 @@ requireLogin();
 // ========================================================================
 
 // If coming from confirmation, "save" the data to a text file
+// If coming from confirmation, save the bookings to database
 if (isset($_GET['save']) && !empty($_SESSION['cart'])) {
-    $log = "Booking on " . date('Y-m-d H:i') . " by " . getCurrentUserName() . " for: ";
-    foreach ($_SESSION['cart'] as $item) {
-        $log .= $item['name'] . ", ";
+    $userId = getCurrentUserId();
+    $successCount = 0;
+    
+    try {
+        // Begin transaction for data integrity
+        $pdo->beginTransaction();
+        
+        foreach ($_SESSION['cart'] as $item) {
+            // Get lab details for calculating cost
+            $stmt = $pdo->prepare("SELECT hourly_rate FROM labs WHERE id = ?");
+            $stmt->execute([$item['id']]);
+            $lab = $stmt->fetch();
+            
+            if ($lab) {
+                // For this simple system, we'll use default values
+                // In a real system, users would select date/time on cart page
+                $bookingDate = date('Y-m-d'); // Today
+                $startTime = date('H:00:00'); // Current hour
+                $endTime = date('H:00:00', strtotime('+2 hours')); // 2 hours later
+                $totalCost = $lab['hourly_rate'] * 2; // 2 hours
+                
+                // Insert booking into database
+                $stmt = $pdo->prepare("
+                    INSERT INTO bookings (user_id, lab_id, booking_date, start_time, end_time, purpose, total_cost, status) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed')
+                ");
+                
+                if ($stmt->execute([
+                    $userId,
+                    $item['id'],
+                    $bookingDate,
+                    $startTime,
+                    $endTime,
+                    'Lab booking via cart system',
+                    $totalCost
+                ])) {
+                    $successCount++;
+                }
+            }
+        }
+        
+        // Commit transaction
+        $pdo->commit();
+        
+        // Also save to text file for backward compatibility
+        $log = "Booking on " . date('Y-m-d H:i') . " by " . getCurrentUserName() . " for: ";
+        foreach ($_SESSION['cart'] as $item) {
+            $log .= $item['name'] . ", ";
+        }
+        $log = rtrim($log, ", ") . "\n";
+        file_put_contents("history.txt", $log, FILE_APPEND);
+        
+        // Clear cart after successful save
+        unset($_SESSION['cart']);
+        
+        // Success message
+        setFlash("Successfully booked {$successCount} lab(s)! 🎉", 'success');
+        
+    } catch (PDOException $e) {
+        // Rollback on error
+        $pdo->rollBack();
+        setFlash('Booking failed. Please try again.', 'error');
+        logError('History save error: ' . $e->getMessage());
     }
-    $log = rtrim($log, ", ") . "\n";
-    
-    file_put_contents("history.txt", $log, FILE_APPEND);
-    
-    // ✅ ADDED: Flash message
-    setFlash('Booking saved successfully! 🎉', 'success');
-    
-    unset($_SESSION['cart']); // Clear cart after saving
 }
 
 // ✅ KEPT: Your teammate's file reading logic (UNCHANGED)
